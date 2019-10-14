@@ -11,8 +11,7 @@
 //==============================================================================
 
 #include "led_panel_font.h"
-#if defined( HAL_SPI_MODULE_ENABLED ) & \
-	defined( MIDDLEWARE_WS2812B_ENABLED )
+#if defined( MIDDLEWARE_WS2812B_ENABLED )
 
 //==============================================================================
 // VARIABLES

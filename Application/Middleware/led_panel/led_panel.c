@@ -10,14 +10,14 @@
 // CHECK TO ENABLE LIBRARY
 //==============================================================================
 #include "led_panel.h"
-#if defined(HAL_SPI_MODULE_ENABLED)    & \
+#if defined(HAL_TIM_MODULE_ENABLED)    & \
 	defined(MIDDLEWARE_LED_PANEL_ENABLED)
 
 //==============================================================================
 // INCLUDE FILES
 //==============================================================================
 
-#include "ws2812b/ws2812b.h"
+#include "ws2812b/ws2812.h"
 #include "bitwise/bitwise.h"
 #include <stddef.h>
 #include <string.h>
@@ -35,8 +35,8 @@
 #endif
 
 #define xNUM_TOTAL_LEDS			PAINEL_LED_WIDTH * PAINEL_LED_HEIGHT    /* Number os leds in the line */
-#define NUM_COLORS_LED			3                                       /* red, green, blue */
-#define NUM_BITS_PER_COLOR		8
+#define NUM_COLORS_LED			1                                       /* red, green, blue */
+#define NUM_BITS_PER_COLOR		1
 
 #define NUM_BITS_RGB_COLOR		(NUM_COLORS_LED * NUM_BITS_PER_COLOR)	/* red(8bits), green(8bits), blue(8bits) */
 #define SIZE_VECTOR				(xNUM_TOTAL_LEDS * NUM_BITS_RGB_COLOR)
@@ -45,22 +45,17 @@
 // PRIVATE TYPEDEFS
 //==============================================================================
 
-typedef struct
-{
-	uint8_t pixels[SIZE_VECTOR];
-} FrameBuffer_t;
-
 //==============================================================================
 // PRIVATE VARIABLES
 //==============================================================================
 
-static FrameBuffer_t framebuffer;
-static RGB_t color;
 static LedPanel_t painelCtrl;
 
 //==============================================================================
-// PRIVATE FUNCTIONS
+// EXTERN VARIABLES
 //==============================================================================
+
+extern uint8_t LEDbuffer[LED_BUFFER_SIZE];
 
 //==============================================================================
 // PRIVATE FUNCTIONS
@@ -72,83 +67,14 @@ static int16_t LedPanel_abs_(int16_t x);
 // PRIVATE SOURCE CODE
 //==============================================================================
 
-void LedPanel_setColor(uint8_t green, uint8_t red, uint8_t blue)
-{
-	color.green = green;
-	color.red = red;
-	color.blue = blue;
-}
-
-void LedPanel_ex1(void)
-{
-	static uint16_t this = 0;
-	uint16_t addr = 0;
-	uint16_t bitRBG = 0;
-
-	for (addr = 0; addr < SIZE_VECTOR; addr += NUM_BITS_RGB_COLOR)
-	{
-		if (addr == this)
-		{
-			for (bitRBG = 0; bitRBG < NUM_BITS_PER_COLOR; bitRBG++)
-			{
-				framebuffer.pixels[addr + bitRBG] =
-						tst_bit(color.green, bitRBG) > 0 ?
-								WS2812_BIT_ON : WS2812_BIT_OFF;
-				framebuffer.pixels[addr + bitRBG + 8] =
-						tst_bit(color.red , bitRBG) > 0 ?
-								WS2812_BIT_ON : WS2812_BIT_OFF;
-				framebuffer.pixels[addr + bitRBG + 16] =
-						tst_bit(color.blue, bitRBG) > 0 ?
-								WS2812_BIT_ON : WS2812_BIT_OFF;
-			}
-		}
-		else
-		{
-			for (bitRBG = 0; bitRBG < NUM_BITS_PER_COLOR; bitRBG++)
-			{
-				framebuffer.pixels[addr + bitRBG] = WS2812_BIT_OFF;
-				framebuffer.pixels[addr + bitRBG + 8] = WS2812_BIT_OFF;
-				framebuffer.pixels[addr + bitRBG + 16] = WS2812_BIT_OFF;
-			}
-		}
-	}
-
-	if ((this += NUM_BITS_RGB_COLOR) > SIZE_VECTOR)
-	{
-		this = 0;
-	}
-
-	ws2812b_write(framebuffer.pixels, SIZE_VECTOR);
-}
-
 void LedPanel_colorFill(RGB_t _color)
 {
-	uint16_t addr = 0;
-	uint16_t bitRBG = 0;
-
-	for (addr = 0; addr < SIZE_VECTOR; addr += NUM_BITS_RGB_COLOR)
-	{
-		for (bitRBG = 0; bitRBG < NUM_BITS_PER_COLOR; bitRBG++)
-		{
-			framebuffer.pixels[addr + bitRBG] =
-					tst_bit(_color.green, bitRBG) > 0 ?
-							WS2812_BIT_ON : WS2812_BIT_OFF;
-			framebuffer.pixels[addr + bitRBG + 8] =
-					tst_bit(_color.red , bitRBG) > 0 ?
-							WS2812_BIT_ON : WS2812_BIT_OFF;
-			framebuffer.pixels[addr + bitRBG + 16] =
-					tst_bit(_color.blue, bitRBG) > 0 ?
-							WS2812_BIT_ON : WS2812_BIT_OFF;
-		}
-	}
-
-	ws2812b_write(framebuffer.pixels, SIZE_VECTOR);
+	setWHOLEcolor(_color);
 }
 
 void LedPanel_DrawCircle(LedPanelCircDisplay_t circParameters)
 {
-	int16_t x0 = circParameters.xi, y0 = circParameters.yi, radius =
-			circParameters.r;
+	int16_t x0 = circParameters.xi, y0 = circParameters.yi, radius = circParameters.r;
 	RGB_t color = circParameters.c;
 
 	int16_t f = 1 - radius;
@@ -229,8 +155,7 @@ static int16_t LedPanel_abs_(int16_t x)
 }
 void LedPanel_drawLine(LedPanelLineDisplay_t lineParameters)
 {
-	int16_t startX = lineParameters.x0, startY = lineParameters.y0, endX =
-			lineParameters.x1, endY = lineParameters.y1;
+	int16_t startX = lineParameters.x0, startY = lineParameters.y0, endX = lineParameters.x1, endY = lineParameters.y1;
 	RGB_t color = lineParameters.c;
 
 	int16_t x0 = startX;
@@ -275,7 +200,6 @@ void LedPanel_drawLine(LedPanelLineDisplay_t lineParameters)
 void LedPanel_drawPixel(uint16_t x, uint16_t y, RGB_t _color)
 {
 	uint16_t addrX = 0, addrY = 0, addr = 0;
-	uint16_t bitRBG = 0;
 
 	if (x % 2 == 0)
 	{
@@ -290,57 +214,25 @@ void LedPanel_drawPixel(uint16_t x, uint16_t y, RGB_t _color)
 		addr = addrX + addrY;
 	}
 
-	for (bitRBG = 0; bitRBG < NUM_BITS_PER_COLOR; bitRBG++)
-	{
-		framebuffer.pixels[addr + bitRBG] =
-				tst_bit(_color.green, bitRBG) > 0 ?
-						WS2812_BIT_ON : WS2812_BIT_OFF;
-		framebuffer.pixels[addr + bitRBG + 8] =
-				tst_bit(_color.red , bitRBG) > 0 ?
-						WS2812_BIT_ON : WS2812_BIT_OFF;
-		framebuffer.pixels[addr + bitRBG + 16] =
-				tst_bit(_color.blue, bitRBG) > 0 ?
-						WS2812_BIT_ON : WS2812_BIT_OFF;
-	}
+	setLEDcolor(addr, _color);
 }
 
 void LedPanel_UpdateScreen(void)
 {
-	ws2812b_write(framebuffer.pixels, SIZE_VECTOR);
+	ws2812_update();
 }
 
 void LedPanel_clearPixel(uint16_t x, uint16_t y)
 {
-	uint16_t addrX = 0, addrY = 0, addr = 0;
-	uint16_t bitRBG = 0;
+	RGB_t _color = {0};
 
-	if (x % 2 == 0)
-	{
-		addrX = (x * NUM_BITS_RGB_COLOR * PAINEL_LED_WIDTH);
-		addrY = ((PAINEL_LED_HEIGHT - y) * NUM_BITS_RGB_COLOR);
-		addr = addrX + addrY;
-	}
-	else
-	{
-		addrX = (x * NUM_BITS_RGB_COLOR * PAINEL_LED_WIDTH);
-		addrY = (y * NUM_BITS_RGB_COLOR);
-		addr = addrX + addrY;
-	}
-
-	for (bitRBG = 0; bitRBG < NUM_BITS_PER_COLOR; bitRBG++)
-	{
-		framebuffer.pixels[addr + bitRBG] = WS2812_BIT_OFF;
-		framebuffer.pixels[addr + bitRBG + 8] = WS2812_BIT_OFF;
-		framebuffer.pixels[addr + bitRBG + 16] = WS2812_BIT_OFF;
-	}
-
-	ws2812b_write(framebuffer.pixels, SIZE_VECTOR);
+	LedPanel_drawPixel(x, y, _color);
 }
 
 void LedPanel_clear(void)
 {
-	memset(framebuffer.pixels, WS2812_BIT_OFF, sizeof(framebuffer.pixels));
-	ws2812b_write(framebuffer.pixels, SIZE_VECTOR);
+	RGB_t _color = {0};
+	setWHOLEcolor(_color);
 }
 
 void LedPanel_setCursor(uint16_t xPos, uint16_t yPos)
@@ -355,8 +247,7 @@ void LedPanel_printChar(uint8_t caracter, FontDef_t Font, RGB_t color)
 
 	if (caracter == '\n')
 	{
-		LedPanel_setCursor(painelCtrl.CurrentX,
-				painelCtrl.CurrentY + Font.FontHeight + 3);
+		LedPanel_setCursor(painelCtrl.CurrentX, painelCtrl.CurrentY + Font.FontHeight + 3);
 	}
 
 	if (caracter == '\r')
@@ -365,9 +256,13 @@ void LedPanel_printChar(uint8_t caracter, FontDef_t Font, RGB_t color)
 	}
 
 	if (caracter == 176 /* ° */)
+	{
 		caracter = 127;
+	}
 	if (caracter < 0x20 || caracter > 0x7F)
+	{
 		return;
+	}
 
 	if (painelCtrl.CurrentX + Font.FontWidth >= PAINEL_LED_WIDTH)
 	{
@@ -382,8 +277,7 @@ void LedPanel_printChar(uint8_t caracter, FontDef_t Font, RGB_t color)
 		{
 			if ((b << j) & 0x8000)
 			{
-				LedPanel_drawPixel(painelCtrl.CurrentX + j,
-						(painelCtrl.CurrentY + i), (RGB_t) color);
+				LedPanel_drawPixel(painelCtrl.CurrentX + j, (painelCtrl.CurrentY + i), (RGB_t) color);
 			}
 		}
 	}

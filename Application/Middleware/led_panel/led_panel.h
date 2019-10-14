@@ -18,7 +18,7 @@ extern "C" {
 //==============================================================================
 
 #include "setup_hw.h"
-#if defined(HAL_SPI_MODULE_ENABLED) && \
+#if defined(HAL_TIM_MODULE_ENABLED) && \
 	defined(MIDDLEWARE_LED_PANEL_ENABLED)
 
 //==============================================================================
@@ -104,8 +104,6 @@ void LedPanel_setCursor(uint16_t xPos, uint16_t yPos);
 void LedPanel_printChar(uint8_t caracter, FontDef_t Font, RGB_t color);
 
 void LedPanel_ex1(void);
-void LedPanel_setColor(uint8_t green, uint8_t red, uint8_t blue);
-
 
 #endif /* MIDDLEWARE_LED_PANEL_ENABLED */
 
