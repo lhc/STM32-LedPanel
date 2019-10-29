@@ -1,6 +1,23 @@
+//==============================================================================
+// INCLUDE FILES
+//==============================================================================
+
 #include "strip_effects.h"
 #include "ws2812b/ws2812.h"
 
+//==============================================================================
+// PRIVATE DEFINITIONS
+//==============================================================================
+
+#define HEARTBEAT_STEPS		16
+
+//==============================================================================
+// PRIVATE TYPEDEFS
+//==============================================================================
+
+//==============================================================================
+// PRIVATE VARIABLES
+//==============================================================================
 
 /* this array holds the RGB values to represent 
  * a color wheel using 256 steps on each emitter
@@ -778,6 +795,14 @@ uint8_t colorsFull[766][3] =
 
 RGB_t none_color = {0};
 
+//==============================================================================
+// PRIVATE FUNCTIONS
+//==============================================================================
+
+//==============================================================================
+// SOURCE CODE
+//==============================================================================
+
 void stripEffect_AllColors(uint32_t interval)
 {
 	uint32_t index = 0;
@@ -786,12 +811,12 @@ void stripEffect_AllColors(uint32_t interval)
 
 	while (1)
 	{
-		for (led = 0; led < LED_NUMBER; led++)
+		for (led = 0; led < constLED_NUMBER; led++)
 		{
 			aux_color.red = colorsFull[index + led][0];
 			aux_color.green = colorsFull[index + led][1];
 			aux_color.blue =  colorsFull[index + led][2];
-			setLEDcolor(led, aux_color);
+			ws2812_set_ledColor(led, aux_color);
 		}
 
 		index++;
@@ -813,16 +838,16 @@ void stripEffect_ColorWheel(uint32_t interval)
 
 	while (1)
 	{
-		for (led = 0; led < LED_NUMBER; led++)
+		for (led = 0; led < constLED_NUMBER; led++)
 		{
 			aux_color.red = colorsFull[colorIndex][0];
 			aux_color.green = colorsFull[colorIndex][1];
 			aux_color.blue = colorsFull[colorIndex][2];
-			colorIndex = (index + led * (766 / LED_NUMBER)) % 766;
-			setLEDcolor(led, aux_color);
+			colorIndex = (index + led * (766 / constLED_NUMBER)) % 766;
+			ws2812_set_ledColor(led, aux_color);
 		}
 
-		index += (766 / LED_NUMBER);
+		index += (766 / constLED_NUMBER);
 		index %= 766;
 		HAL_Delay(interval);
 	}
@@ -832,14 +857,13 @@ void stripEffect_CircularRing(uint32_t interval, RGB_t color)
 {
 	uint32_t index = 0;
 
-
 	while (1)
 	{
-		setWHOLEcolor(none_color);
-		setLEDcolor(index, color);
+		ws2812_set_wholeColor(none_color);
+		ws2812_set_ledColor(index, color);
 		index++;
 
-		if (index >= LED_NUMBER)
+		if (index >= constLED_NUMBER)
 		{
 			index = 0;
 		}
@@ -865,7 +889,7 @@ void stripEffect_HeartBeat(uint32_t interval, RGB_t color)
 
 	uint32_t index;
 
-	setWHOLEcolor(none_color);
+	ws2812_set_wholeColor(none_color);
 
 	while (1)
 	{
@@ -875,7 +899,7 @@ void stripEffect_HeartBeat(uint32_t interval, RGB_t color)
 			aux_color.red = index * redInc;
 			aux_color.green = index * greenInc;
 			aux_color.blue =  index * blueInc;
-			setWHOLEcolor(aux_color);
+			ws2812_set_wholeColor(aux_color);
 			HAL_Delay(interval / 50);
 		}
 
@@ -884,9 +908,9 @@ void stripEffect_HeartBeat(uint32_t interval, RGB_t color)
 			aux_color.red = maxRed - index * redInc;
 			aux_color.green = maxGreen - index * greenInc;
 			aux_color.blue =  maxBlue - index * blueInc;
-			setWHOLEcolor(aux_color);
+			ws2812_set_wholeColor(aux_color);
 
-			setWHOLEcolor(aux_color);
+			ws2812_set_wholeColor(aux_color);
 			HAL_Delay(interval / 45);
 		}
 
@@ -896,7 +920,7 @@ void stripEffect_HeartBeat(uint32_t interval, RGB_t color)
 			aux_color.red = index * redInc;
 			aux_color.green = index * greenInc;
 			aux_color.blue = index * blueInc;
-			setWHOLEcolor(aux_color);
+			ws2812_set_wholeColor(aux_color);
 			HAL_Delay(interval / 40);
 		}
 
@@ -906,7 +930,7 @@ void stripEffect_HeartBeat(uint32_t interval, RGB_t color)
 			aux_color.green = maxGreen - index * greenInc;
 			aux_color.blue =  maxBlue - index * blueInc;
 
-			setWHOLEcolor(aux_color);
+			ws2812_set_wholeColor(aux_color);
 			HAL_Delay(interval / 35);
 		}
 
@@ -921,21 +945,21 @@ void stripEffect_PatternMove(uint32_t interval, uint32_t parts,	RGB_t color)
 	uint32_t indexStep;
 	uint32_t i;
 
-	indexStep = LED_NUMBER / parts;
+	indexStep = constLED_NUMBER / parts;
 
-	setWHOLEcolor(none_color);
+	ws2812_set_wholeColor(none_color);
 
 	while (1)
 	{
-		setWHOLEcolor(none_color);
+		ws2812_set_wholeColor(none_color);
 		for (i = 0; i < parts; i++)
 		{
-			setLEDcolor(index + i * indexStep, color);
+			ws2812_set_ledColor(index + i * indexStep, color);
 		}
 
 		index++;
 
-		if (index >= LED_NUMBER)
+		if (index >= constLED_NUMBER)
 		{
 			index = 0;
 		}
@@ -948,19 +972,19 @@ void stripEffect_FullEmpty(uint32_t interval, RGB_t color)
 {
 	uint32_t index = 0;
 
-	setWHOLEcolor(none_color);
+	ws2812_set_wholeColor(none_color);
 
 	while (1)
 	{
-		for (index = 0; index < LED_NUMBER; index++)
+		for (index = 0; index < constLED_NUMBER; index++)
 		{
-			setLEDcolor(index, color);
+			ws2812_set_ledColor(index, color);
 			HAL_Delay(interval);
 		}
 
-		for (index = 0; index < LED_NUMBER; index++)
+		for (index = 0; index < constLED_NUMBER; index++)
 		{
-			setLEDcolor(index, none_color);
+			ws2812_set_ledColor(index, none_color);
 			HAL_Delay(interval);
 		}
 	}
@@ -982,7 +1006,7 @@ void stripEffect_FromTo(uint32_t interval, uint32_t steps, RGB_t colorA, RGB_t c
 		aux_color.green =  colorA.green + i * deltaGreen;
 		aux_color.blue = + colorA.blue + i * deltaBlue; // + TODO revisar
 
-		setWHOLEcolor(aux_color);
+		ws2812_set_wholeColor(aux_color);
 
 		HAL_Delay(interval / steps);
 	}
@@ -1006,7 +1030,7 @@ void stripEffect_AlternateColors(uint32_t interval, uint32_t steps, RGB_t colorA
 			aux_color.green = colorA.green + i * deltaGreen;
 			aux_color.blue =  +colorA.blue + i * deltaBlue;
 
-			setWHOLEcolor(aux_color);
+			ws2812_set_wholeColor(aux_color);
 			HAL_Delay(interval / steps);
 		}
 
@@ -1016,7 +1040,7 @@ void stripEffect_AlternateColors(uint32_t interval, uint32_t steps, RGB_t colorA
 			aux_color.green = colorA.green + i * deltaGreen;
 			aux_color.blue =  +colorA.blue + i * deltaBlue;
 
-			setWHOLEcolor(aux_color);
+			ws2812_set_wholeColor(aux_color);
 			HAL_Delay(interval / steps);
 		}
 	}

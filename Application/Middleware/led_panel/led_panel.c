@@ -26,21 +26,6 @@
 // PRIVATE DEFINITIONS
 //==============================================================================
 
-#ifndef PAINEL_LED_WIDTH
-#error "LedPanel_LCD_WIDTH was not declared"
-#endif
-
-#ifndef PAINEL_LED_HEIGHT
-#error "LedPanel_LCD_HEIGHT was not declared"
-#endif
-
-#define xNUM_TOTAL_LEDS			PAINEL_LED_WIDTH * PAINEL_LED_HEIGHT    /* Number os leds in the line */
-#define NUM_COLORS_LED			1                                       /* red, green, blue */
-#define NUM_BITS_PER_COLOR		1
-
-#define NUM_BITS_RGB_COLOR		(NUM_COLORS_LED * NUM_BITS_PER_COLOR)	/* red(8bits), green(8bits), blue(8bits) */
-#define SIZE_VECTOR				(xNUM_TOTAL_LEDS * NUM_BITS_RGB_COLOR)
-
 //==============================================================================
 // PRIVATE TYPEDEFS
 //==============================================================================
@@ -55,8 +40,6 @@ static LedPanel_t painelCtrl;
 // EXTERN VARIABLES
 //==============================================================================
 
-extern uint8_t LEDbuffer[LED_BUFFER_SIZE];
-
 //==============================================================================
 // PRIVATE FUNCTIONS
 //==============================================================================
@@ -69,7 +52,7 @@ static int16_t LedPanel_abs_(int16_t x);
 
 void LedPanel_colorFill(RGB_t _color)
 {
-	setWHOLEcolor(_color);
+	ws2812_set_wholeColor(_color);
 }
 
 void LedPanel_DrawCircle(LedPanelCircDisplay_t circParameters)
@@ -203,18 +186,18 @@ void LedPanel_drawPixel(uint16_t x, uint16_t y, RGB_t _color)
 
 	if (x % 2 == 0)
 	{
-		addrX = (x * NUM_BITS_RGB_COLOR * PAINEL_LED_WIDTH);
-		addrY = ((PAINEL_LED_HEIGHT - y) * NUM_BITS_RGB_COLOR);
+		addrX = (x * configPAINEL_LED_WIDTH);
+		addrY = (configPAINEL_LED_HEIGHT - y);
 		addr = addrX + addrY;
 	}
 	else
 	{
-		addrX = (x * NUM_BITS_RGB_COLOR * PAINEL_LED_WIDTH);
-		addrY = (y * NUM_BITS_RGB_COLOR);
+		addrX = (x * configPAINEL_LED_WIDTH);
+		addrY = y ;
 		addr = addrX + addrY;
 	}
 
-	setLEDcolor(addr, _color);
+	ws2812_set_ledColor(addr, _color);
 }
 
 void LedPanel_UpdateScreen(void)
@@ -232,7 +215,7 @@ void LedPanel_clearPixel(uint16_t x, uint16_t y)
 void LedPanel_clear(void)
 {
 	RGB_t _color = {0};
-	setWHOLEcolor(_color);
+	ws2812_set_wholeColor(_color);
 }
 
 void LedPanel_setCursor(uint16_t xPos, uint16_t yPos)
@@ -264,7 +247,7 @@ void LedPanel_printChar(uint8_t caracter, FontDef_t Font, RGB_t color)
 		return;
 	}
 
-	if (painelCtrl.CurrentX + Font.FontWidth >= PAINEL_LED_WIDTH)
+	if (painelCtrl.CurrentX + Font.FontWidth >= configPAINEL_LED_WIDTH)
 	{
 		LedPanel_setCursor(0, painelCtrl.CurrentY + Font.FontHeight);
 	}
