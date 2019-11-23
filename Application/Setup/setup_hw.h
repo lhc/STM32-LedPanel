@@ -42,7 +42,7 @@
 //==============================================================================
 
 #define configPAINEL_LED_WIDTH        17
-#define configPAINEL_LED_HEIGHT       16
+#define configPAINEL_LED_HEIGHT       17
 
 #define MIDDLEWARE_WS2812B_ENABLED
 #define MIDDLEWARE_LED_PANEL_ENABLED

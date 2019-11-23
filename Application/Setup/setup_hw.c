@@ -143,81 +143,93 @@ static void Setup_InitTasks(void)
 	for(;;)
 	{
 		/* Desenha as letras LHC */
-//		LedPanel_clear();
-//
-//		LedPanel_setCursor(0,0);
-//		xColor.blue = 0x00;
-//		xColor.green = 0x0f;
-//		xColor.red = 0x00;
-//		LedPanel_printChar('L', Font_7x10, xColor);
-//
-//		LedPanel_setCursor(9,0);
-//		xColor.blue = 0x00;
-//		xColor.green = 0x00;
-//		xColor.red = 0xff;
-//		LedPanel_printChar('C', Font_7x10, xColor);
-//
-//		LedPanel_setCursor(4,9);
-//		xColor.blue = 0x10;
-//		xColor.green = 0x00;
-//		xColor.red = 0x00;
-//		LedPanel_printChar('H', Font_7x10, xColor);
-//
-//		HAL_Delay(2000);
-//
-//		/* Desenha um circulo */
-//
-//		circulo.c = xColor;
-//		circulo.r = 5;
-//		circulo.yi = 7;
-//		circulo.xi = 7;
-//		LedPanel_clear();
-//		LedPanel_DrawCircle(circulo);
-//		HAL_Delay(1000);
-//
-//		/* Desenha um triangulo */
-//
-//		triangle.c = xColor;
-//		triangle.x0 = 1;
-//		triangle.y0 = 2;
-//		triangle.x1 = 7;
-//		triangle.y1 = 14;
-//		triangle.x2 = 14;
-//		triangle.y2 = 2;
-//		LedPanel_clear();
-//		LedPanel_drawTriangle(triangle);
-//		HAL_Delay(1000);
+		LedPanel_clear();
 
-#if 1   // TODO Outros exemplos, melhororar.
-//		xColor.red = 0;
-//		xColor.green = 0;
-//		xColor.blue = 20;
-//		stripEffect_CircularRing(50, xColor);
-//
+		LedPanel_setCursor(0,0);
+		xColor.blue = 0x00;
+		xColor.green = 0x0f;
+		xColor.red = 0x00;
+		LedPanel_printChar('L', Font_7x10, xColor);
+
+		LedPanel_setCursor(9,0);
+		xColor.blue = 0x00;
+		xColor.green = 0x00;
+		xColor.red = 0xff;
+		LedPanel_printChar('C', Font_7x10, xColor);
+
+		LedPanel_setCursor(4,9);
+		xColor.blue = 0x10;
+		xColor.green = 0x00;
+		xColor.red = 0x00;
+		LedPanel_printChar('H', Font_7x10, xColor);
+
+		HAL_Delay(2000);
+
+		/* Desenha um circulo */
+
+		circulo.c = xColor;
+		circulo.r = 5;
+		circulo.yi = 7;
+		circulo.xi = 7;
+		LedPanel_clear();
+		LedPanel_DrawCircle(circulo);
+		HAL_Delay(1000);
+
+		/* Desenha um triangulo */
+
+		triangle.c = xColor;
+		triangle.x0 = 1;
+		triangle.y0 = 2;
+		triangle.x1 = 7;
+		triangle.y1 = 14;
+		triangle.x2 = 14;
+		triangle.y2 = 2;
+		LedPanel_clear();
+		LedPanel_drawTriangle(triangle);
+		HAL_Delay(1000);
+
+		xColor.red = 0;
+		xColor.green = 0;
+		xColor.blue = 20;
+		stripEffect_CircularRing(50, xColor, 10000);
+
 		xColor.red = 64;
 		xColor.green = 0;
 		xColor.blue = 16;
-		stripEffect_HeartBeat(700, xColor);
-		stripEffect_ColorWheel(50);
-//
-//		xColor.red = 10;
-//		xColor.green = 10;
-//		xColor.blue = 10;
-//		stripEffect_PatternMove(50, 5, xColor);
-//
-//		xColor.red = 20;
-//		xColor.green = 20;
-//		xColor.blue = 20;
-//		stripEffect_FullEmpty(50, xColor);
-//
-//		xColor.red = 50;
-//		xColor.green = 0;
-//		xColor.blue = 0;
-//		xColorB.red = 0;
-//		xColorB.green = 0;
-//		xColorB.blue = 50;
-//		stripEffect_AlternateColors(1000, 10, xColor, xColorB);
-#endif
+		stripEffect_HeartBeat(700, xColor, 10000);
+		stripEffect_ColorWheel(5, 10000);
+
+		xColor.red = 10;
+		xColor.green = 10;
+		xColor.blue = 10;
+		stripEffect_PatternMove(50, 5, xColor, 10000);
+
+		xColor.red = 20;
+		xColor.green = 20;
+		xColor.blue = 20;
+		stripEffect_FullEmpty(50, xColor, 3000);
+
+		xColor.red = 50;
+		xColor.green = 0;
+		xColor.blue = 0;
+		xColorB.red = 0;
+		xColorB.green = 0;
+		xColorB.blue = 50;
+		stripEffect_AlternateColors(1000, 10, xColor, xColorB, 3000);
+
+		//		LedPanel_clear();
+		//
+		//		HAL_Delay(100);
+		//
+		//		for(uint16_t y = 0; y < configPAINEL_LED_WIDTH; y++)
+		//		{
+		//			for(uint16_t x = 0; x < configPAINEL_LED_WIDTH; x++)
+		//			{
+		//				LedPanel_drawPixel(x, y, xColor);
+		//				HAL_Delay(200);
+		//			}
+		//		}
+
 
 	}
 }

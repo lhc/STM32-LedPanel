@@ -29,14 +29,14 @@ extern "C" {
 // PUBLIC FUNCTIONS
 //==============================================================================
 
-void stripEffect_CircularRing(uint32_t interval, RGB_t color);
-void stripEffect_HeartBeat(uint32_t interval, RGB_t color);
-void stripEffect_ColorWheel(uint32_t interval);
+void stripEffect_CircularRing(uint32_t interval, RGB_t color, uint32_t timeout_ms);
+void stripEffect_HeartBeat(uint32_t interval, RGB_t color, uint32_t timeout_ms);
+void stripEffect_ColorWheel(uint32_t interval, uint32_t timeout_ms);
 void stripEffect_AllColors(uint32_t interval);
-void stripEffect_PatternMove(uint32_t interval, uint32_t parts,	RGB_t color);
-void stripEffect_FullEmpty(uint32_t interval, RGB_t color);
+void stripEffect_PatternMove(uint32_t interval, uint32_t parts,	RGB_t color, uint32_t timeout_ms);
+void stripEffect_FullEmpty(uint32_t interval, RGB_t color, uint32_t timeout_ms);
 void stripEffect_FromTo(uint32_t interval, uint32_t steps, RGB_t colorA, RGB_t colorB);
-void stripEffect_AlternateColors(uint32_t interval, uint32_t steps, RGB_t colorA, RGB_t colorB);
+void stripEffect_AlternateColors(uint32_t interval, uint32_t steps, RGB_t colorA, RGB_t colorB, uint32_t timeout_ms);
 void stripEffect_setColor(RGB_t *color, uint8_t red, uint8_t green, uint8_t blue);
 
 /* C++ detection */

@@ -186,13 +186,13 @@ void LedPanel_drawPixel(uint16_t x, uint16_t y, RGB_t _color)
 
 	if (x % 2 == 0)
 	{
-		addrX = (x * configPAINEL_LED_WIDTH);
-		addrY = (configPAINEL_LED_HEIGHT - y);
+		addrX = (x * (configPAINEL_LED_WIDTH));
+		addrY = ((configPAINEL_LED_HEIGHT-1) - y);
 		addr = addrX + addrY;
 	}
 	else
 	{
-		addrX = (x * configPAINEL_LED_WIDTH);
+		addrX = (x * (configPAINEL_LED_WIDTH));
 		addrY = y ;
 		addr = addrX + addrY;
 	}

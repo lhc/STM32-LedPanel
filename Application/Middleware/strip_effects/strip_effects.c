@@ -830,13 +830,16 @@ void stripEffect_AllColors(uint32_t interval)
 	}
 }
 
-void stripEffect_ColorWheel(uint32_t interval)
+void stripEffect_ColorWheel(uint32_t interval, uint32_t timeout_ms)
 {
 	uint32_t index = 0;
-	uint32_t led, colorIndex;
+	uint32_t led=0, colorIndex=0;
 	RGB_t aux_color;
+	uint32_t timer;
 
-	while (1)
+	timer = HAL_GetTick();
+
+	while (timeout_ms > (HAL_GetTick() - timer))
 	{
 		for (led = 0; led < constLED_NUMBER; led++)
 		{
@@ -853,11 +856,14 @@ void stripEffect_ColorWheel(uint32_t interval)
 	}
 }
 
-void stripEffect_CircularRing(uint32_t interval, RGB_t color)
+void stripEffect_CircularRing(uint32_t interval, RGB_t color, uint32_t timeout_ms)
 {
 	uint32_t index = 0;
+	uint32_t timer;
 
-	while (1)
+	timer = HAL_GetTick();
+
+	while (timeout_ms > (HAL_GetTick() - timer))
 	{
 		ws2812_set_wholeColor(none_color);
 		ws2812_set_ledColor(index, color);
@@ -873,11 +879,12 @@ void stripEffect_CircularRing(uint32_t interval, RGB_t color)
 }
 
 // the interval should be in the 300-1000 range for best visual effect
-void stripEffect_HeartBeat(uint32_t interval, RGB_t color)
+void stripEffect_HeartBeat(uint32_t interval, RGB_t color, uint32_t timeout_ms)
 {
 	uint8_t redInc, greenInc, blueInc;
 	uint8_t maxRed, maxGreen, maxBlue;
 	RGB_t aux_color;
+	uint32_t timer;
 
 	redInc = color.red / HEARTBEAT_STEPS;
 	greenInc = color.green / HEARTBEAT_STEPS;
@@ -891,7 +898,9 @@ void stripEffect_HeartBeat(uint32_t interval, RGB_t color)
 
 	ws2812_set_wholeColor(none_color);
 
-	while (1)
+	timer = HAL_GetTick();
+
+	while (timeout_ms > (HAL_GetTick() - timer))
 	{
 		// first stroke
 		for (index = 0; index < HEARTBEAT_STEPS; index++)
@@ -939,17 +948,20 @@ void stripEffect_HeartBeat(uint32_t interval, RGB_t color)
 	}
 }
 
-void stripEffect_PatternMove(uint32_t interval, uint32_t parts,	RGB_t color)
+void stripEffect_PatternMove(uint32_t interval, uint32_t parts,	RGB_t color, uint32_t timeout_ms)
 {
 	uint32_t index = 0;
 	uint32_t indexStep;
 	uint32_t i;
+	uint32_t timer;
 
 	indexStep = constLED_NUMBER / parts;
 
 	ws2812_set_wholeColor(none_color);
 
-	while (1)
+	timer = HAL_GetTick();
+
+	while (timeout_ms > (HAL_GetTick() - timer))
 	{
 		ws2812_set_wholeColor(none_color);
 		for (i = 0; i < parts; i++)
@@ -968,13 +980,16 @@ void stripEffect_PatternMove(uint32_t interval, uint32_t parts,	RGB_t color)
 	}
 }
 
-void stripEffect_FullEmpty(uint32_t interval, RGB_t color)
+void stripEffect_FullEmpty(uint32_t interval, RGB_t color, uint32_t timeout_ms)
 {
 	uint32_t index = 0;
+	uint32_t timer;
 
 	ws2812_set_wholeColor(none_color);
 
-	while (1)
+	timer = HAL_GetTick();
+
+	while (timeout_ms > (HAL_GetTick() - timer))
 	{
 		for (index = 0; index < constLED_NUMBER; index++)
 		{
@@ -1012,9 +1027,10 @@ void stripEffect_FromTo(uint32_t interval, uint32_t steps, RGB_t colorA, RGB_t c
 	}
 }
 
-void stripEffect_AlternateColors(uint32_t interval, uint32_t steps, RGB_t colorA, RGB_t colorB)
+void stripEffect_AlternateColors(uint32_t interval, uint32_t steps, RGB_t colorA, RGB_t colorB, uint32_t timeout_ms)
 {
 	uint32_t i;
+	uint32_t timer;
 	int32_t deltaRed, deltaGreen, deltaBlue;
 	RGB_t aux_color;
 
@@ -1022,7 +1038,9 @@ void stripEffect_AlternateColors(uint32_t interval, uint32_t steps, RGB_t colorA
 	deltaGreen = ((int32_t) colorB.green - (int32_t) colorA.green) / (int32_t) steps;
 	deltaBlue = ((int32_t) colorB.blue - (int32_t) colorA.blue) / (int32_t) steps;
 
-	while (1)
+	timer = HAL_GetTick();
+
+	while (timeout_ms > (HAL_GetTick() - timer))
 	{
 		for (i = 0; i < steps; i++)
 		{
